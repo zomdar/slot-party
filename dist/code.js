@@ -1,13 +1,71 @@
 (() => {
   // widget-src/code.tsx
   var { widget } = figma;
-  var { AutoLayout, Ellipse, Frame, Image, Rectangle, SVG, Text } = widget;
+  var {
+    AutoLayout,
+    Ellipse,
+    Frame,
+    Image,
+    Rectangle,
+    SVG,
+    Text,
+    useSyncedState,
+    waitForTask
+  } = widget;
   function Widget() {
+    const animals = ["\u{1F43B}", "\u{1F43B}\u200D\u2744\uFE0F", "\u{1F9F8}", "\u{1F428}", "\u{1F43C}", "\u{1F430}", "\u{1F436}", "\u{1F431}", "\u{1F42D}", "\u{1F439}"];
+    const [animal1, setAnimal1] = useSyncedState("animal1", animals[0]);
+    const [animal1Rolling, setAnimal1Rolling] = useSyncedState("animal1Rolling", false);
+    const [animal2, setAnimal2] = useSyncedState("animal2", animals[0]);
+    const [animal2Rolling, setAnimal2Rolling] = useSyncedState("animal2Rolling", false);
+    const [animal3, setAnimal3] = useSyncedState("animal3", animals[0]);
+    const [animal3Rolling, setAnimal3Rolling] = useSyncedState("animal3Rolling", false);
+    const [rolling, setRolling] = useSyncedState("rolling", false);
+    const roll = () => {
+      setRolling(true);
+      setAnimal1Rolling(true);
+      setAnimal2Rolling(true);
+      setAnimal3Rolling(true);
+      waitForTask(new Promise((resolve) => {
+        setTimeout(() => {
+          setAnimal3(animals[Math.floor(Math.random() * animals.length)]);
+          setAnimal3Rolling(false);
+        }, 1e3);
+        setTimeout(() => {
+          setAnimal2(animals[Math.floor(Math.random() * animals.length)]);
+          setAnimal2Rolling(false);
+          setRolling(false);
+        }, 1800);
+        setTimeout(() => {
+          setAnimal1(animals[Math.floor(Math.random() * animals.length)]);
+          setAnimal1Rolling(false);
+          setRolling(false);
+        }, 2600);
+        setTimeout(() => {
+          if (animal1 === animal2 && animal2 === animal3) {
+            figma.notify("You win!");
+          }
+          resolve();
+        }, 2800);
+      }));
+    };
+    const findAnimal = (animal, position) => {
+      const index = animals.indexOf(animal);
+      if (index === -1) {
+        return animals[0];
+      }
+      if (position === "top") {
+        return animals[index + 1];
+      }
+      if (position === "bottom") {
+        return animals[index - 1 + animals.length];
+      }
+    };
     return /* @__PURE__ */ figma.widget.h(Frame, {
       name: "Slot",
       overflow: "visible",
       width: 348,
-      height: 244
+      height: 304
     }, /* @__PURE__ */ figma.widget.h(Frame, {
       name: "slot frame",
       y: 46,
@@ -25,9 +83,50 @@
       width: 295,
       height: 181
     }, /* @__PURE__ */ figma.widget.h(AutoLayout, {
+      hidden: !animal1Rolling,
       name: "row 3",
       x: 201,
-      y: -105,
+      y: -12,
+      fill: "#FFF",
+      stroke: "#A7A7A7",
+      strokeWidth: 4,
+      strokeAlign: "outside",
+      overflow: "visible",
+      direction: "vertical",
+      spacing: 19,
+      padding: {
+        vertical: 13,
+        horizontal: 6
+      }
+    }, /* @__PURE__ */ figma.widget.h(Frame, {
+      name: "Frame 6",
+      effect: {
+        blur: 11,
+        type: "layer-blur"
+      },
+      overflow: "visible",
+      width: 76,
+      height: 266
+    }, /* @__PURE__ */ figma.widget.h(Text, {
+      name: "animal1_top",
+      fill: "#FFF",
+      fontFamily: "Inter",
+      fontSize: 76
+    }, "\u{1F43B}\u200D\u2744\uFE0F"), /* @__PURE__ */ figma.widget.h(Text, {
+      name: "animal1",
+      fill: "#FFF",
+      fontFamily: "Inter",
+      fontSize: 76
+    }, "\u{1F43B}"), /* @__PURE__ */ figma.widget.h(Text, {
+      name: "animal1_bottom",
+      fill: "#FFF",
+      fontFamily: "Inter",
+      fontSize: 76
+    }, "\u{1F43B}\u200D\u2744\uFE0F"))), /* @__PURE__ */ figma.widget.h(AutoLayout, {
+      hidden: animal1Rolling,
+      name: "row 3",
+      x: 201,
+      y: -54,
       fill: "#FFF",
       stroke: "#A7A7A7",
       strokeWidth: 4,
@@ -40,24 +139,65 @@
         horizontal: 6
       }
     }, /* @__PURE__ */ figma.widget.h(Text, {
-      name: "\u{1F43B}\u200D\u2744\uFE0F",
+      name: "animal1_top",
       fill: "#FFF",
       fontFamily: "Inter",
       fontSize: 76
-    }, "\u{1F43B}\u200D\u2744\uFE0F"), /* @__PURE__ */ figma.widget.h(Text, {
-      name: "\u{1F43B}",
+    }, findAnimal(animal1, "top")), /* @__PURE__ */ figma.widget.h(Text, {
+      name: "animal1",
       fill: "#FFF",
       fontFamily: "Inter",
       fontSize: 76
-    }, "\u{1F43B}"), /* @__PURE__ */ figma.widget.h(Text, {
-      name: "\u{1F43C}",
+    }, animal1), /* @__PURE__ */ figma.widget.h(Text, {
+      name: "animal1_bottom",
       fill: "#FFF",
       fontFamily: "Inter",
       fontSize: 76
-    }, "\u{1F43C}")), /* @__PURE__ */ figma.widget.h(AutoLayout, {
+    }, findAnimal(animal1, "bottom"))), /* @__PURE__ */ figma.widget.h(AutoLayout, {
+      hidden: !animal2Rolling,
       name: "row 2",
       x: 103,
-      y: -62,
+      y: 10,
+      fill: "#FFF",
+      stroke: "#A7A7A7",
+      strokeWidth: 4,
+      strokeAlign: "outside",
+      overflow: "visible",
+      direction: "vertical",
+      spacing: 19,
+      padding: {
+        vertical: 13,
+        horizontal: 6
+      }
+    }, /* @__PURE__ */ figma.widget.h(Frame, {
+      name: "Frame 6",
+      effect: {
+        blur: 11,
+        type: "layer-blur"
+      },
+      overflow: "visible",
+      width: 76,
+      height: 266
+    }, /* @__PURE__ */ figma.widget.h(Text, {
+      name: "animal2_top",
+      fill: "#FFF",
+      fontFamily: "Inter",
+      fontSize: 76
+    }, "\u{1F43B}\u200D\u2744\uFE0F"), /* @__PURE__ */ figma.widget.h(Text, {
+      name: "animal2",
+      fill: "#FFF",
+      fontFamily: "Inter",
+      fontSize: 76
+    }, "\u{1F43B}"), /* @__PURE__ */ figma.widget.h(Text, {
+      name: "animal2_bottom",
+      fill: "#FFF",
+      fontFamily: "Inter",
+      fontSize: 76
+    }, "\u{1F9F8}"))), /* @__PURE__ */ figma.widget.h(AutoLayout, {
+      hidden: animal2Rolling,
+      name: "row 2",
+      x: 103,
+      y: -54,
       fill: "#FFF",
       stroke: "#A7A7A7",
       strokeWidth: 4,
@@ -70,24 +210,65 @@
         horizontal: 6
       }
     }, /* @__PURE__ */ figma.widget.h(Text, {
-      name: "\u{1F43B}\u200D\u2744\uFE0F",
+      name: "animal2_top",
       fill: "#FFF",
       fontFamily: "Inter",
       fontSize: 76
-    }, "\u{1F43B}\u200D\u2744\uFE0F"), /* @__PURE__ */ figma.widget.h(Text, {
-      name: "\u{1F43B}",
+    }, findAnimal(animal2, "top")), /* @__PURE__ */ figma.widget.h(Text, {
+      name: "animal2",
       fill: "#FFF",
       fontFamily: "Inter",
       fontSize: 76
-    }, "\u{1F43B}"), /* @__PURE__ */ figma.widget.h(Text, {
-      name: "\u{1F43C}",
+    }, animal2), /* @__PURE__ */ figma.widget.h(Text, {
+      name: "animal2_bottom",
       fill: "#FFF",
       fontFamily: "Inter",
       fontSize: 76
-    }, "\u{1F43C}")), /* @__PURE__ */ figma.widget.h(AutoLayout, {
+    }, findAnimal(animal2, "bottom"))), /* @__PURE__ */ figma.widget.h(AutoLayout, {
+      hidden: !animal3Rolling,
       name: "row 1",
       x: 5,
-      y: -90,
+      y: 10,
+      fill: "#FFF",
+      stroke: "#A7A7A7",
+      strokeWidth: 4,
+      strokeAlign: "outside",
+      overflow: "visible",
+      direction: "vertical",
+      spacing: 19,
+      padding: {
+        vertical: 13,
+        horizontal: 6
+      }
+    }, /* @__PURE__ */ figma.widget.h(Frame, {
+      name: "Frame 6",
+      effect: {
+        blur: 11,
+        type: "layer-blur"
+      },
+      overflow: "visible",
+      width: 76,
+      height: 266
+    }, /* @__PURE__ */ figma.widget.h(Text, {
+      name: "animal3_top",
+      fill: "#FFF",
+      fontFamily: "Inter",
+      fontSize: 76
+    }, "\u{1F43B}\u200D\u2744\uFE0F"), /* @__PURE__ */ figma.widget.h(Text, {
+      name: "animal3",
+      fill: "#FFF",
+      fontFamily: "Inter",
+      fontSize: 76
+    }, "\u{1F43B}\u200D\u2744\uFE0F"), /* @__PURE__ */ figma.widget.h(Text, {
+      name: "animal3_bottom",
+      fill: "#FFF",
+      fontFamily: "Inter",
+      fontSize: 76
+    }, "\u{1F43B}\u200D\u2744\uFE0F"))), /* @__PURE__ */ figma.widget.h(AutoLayout, {
+      hidden: animal3Rolling,
+      name: "row 1",
+      x: 5,
+      y: -54,
       fill: "#FFF",
       stroke: "#A7A7A7",
       strokeWidth: 4,
@@ -100,21 +281,21 @@
         horizontal: 6
       }
     }, /* @__PURE__ */ figma.widget.h(Text, {
-      name: "\u{1F43B}\u200D\u2744\uFE0F",
+      name: "animal3_top",
       fill: "#FFF",
       fontFamily: "Inter",
       fontSize: 76
-    }, "\u{1F43B}\u200D\u2744\uFE0F"), /* @__PURE__ */ figma.widget.h(Text, {
-      name: "\u{1F43B}",
+    }, findAnimal(animal3, "top")), /* @__PURE__ */ figma.widget.h(Text, {
+      name: "animal3",
       fill: "#FFF",
       fontFamily: "Inter",
       fontSize: 76
-    }, "\u{1F43B}"), /* @__PURE__ */ figma.widget.h(Text, {
-      name: "\u{1F43C}",
+    }, animal3), /* @__PURE__ */ figma.widget.h(Text, {
+      name: "animal3_bottom",
       fill: "#FFF",
       fontFamily: "Inter",
       fontSize: 76
-    }, "\u{1F43C}")), /* @__PURE__ */ figma.widget.h(Rectangle, {
+    }, findAnimal(animal3, "bottom"))), /* @__PURE__ */ figma.widget.h(Rectangle, {
       name: "overlay",
       fill: {
         type: "gradient-linear",
@@ -492,7 +673,57 @@
       strokeWidth: 0.806,
       width: 6.444,
       height: 6.444
-    }))));
+    }))), /* @__PURE__ */ figma.widget.h(AutoLayout, {
+      x: 100,
+      y: 260,
+      name: "ButtonOrange",
+      onClick: () => {
+        roll();
+      },
+      fill: {
+        type: "gradient-linear",
+        gradientHandlePositions: [
+          { x: 0.5, y: 0 },
+          { x: 0.5, y: 1 },
+          { x: 1, y: 0 }
+        ],
+        gradientStops: [
+          {
+            position: 0,
+            color: {
+              r: 0.21960784494876862,
+              g: 0.9372549057006836,
+              b: 0.4901960790157318,
+              a: 1
+            }
+          },
+          {
+            position: 1,
+            color: {
+              r: 0.06666667014360428,
+              g: 0.6000000238418579,
+              b: 0.5568627715110779,
+              a: 1
+            }
+          }
+        ]
+      },
+      cornerRadius: 100,
+      overflow: "visible",
+      spacing: 10,
+      padding: {
+        vertical: 8,
+        horizontal: 24
+      }
+    }, /* @__PURE__ */ figma.widget.h(Text, {
+      name: "Spin Here",
+      fill: "#FFF",
+      fontFamily: "Nunito Sans",
+      fontSize: 18,
+      fontWeight: 700,
+      strokeWidth: 0,
+      strokeAlign: "inside"
+    }, "Spin Here")));
   }
   widget.register(Widget);
 })();
