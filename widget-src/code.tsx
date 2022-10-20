@@ -13,8 +13,22 @@ const {
 } = widget;
 
 function Widget() {
-  const animals = ["🐻", "🐻‍❄️", "🧸", "🐨", "🐼", "🐰", "🐶", "🐱", "🐭", "🐹"];
-  // const animals = ["🐻", "🐻‍❄️", "🐻"];
+  const animals = [
+    "🐻",
+    "🐻‍❄️",
+    "🧸",
+    "🐨",
+    "🐼",
+    "🐰",
+    "🐶",
+    "🐱",
+    "🐭",
+    "🐹",
+    "🐮",
+    "🐵",
+    "🦊",
+    "🐷",
+  ];
 
   const [animal1, setAnimal1] = useSyncedState("animal1", animals[0]);
   const [animal1Rolling, setAnimal1Rolling] = useSyncedState(
@@ -35,8 +49,7 @@ function Widget() {
 
   const [win, setWin] = useSyncedState("win", false);
 
-  useEffect(() => {
-  });
+  useEffect(() => {});
 
   const roll = () => {
     setRolling(true);
@@ -67,26 +80,36 @@ function Widget() {
   };
 
   const findAnimal = (animal: string, position: string) => {
-    const index = animals.indexOf(animal);
+    if (animal) {
+      const index = animals.indexOf(animal);
 
-    if (index === -1) {
+      if (index === -1) {
+        return animals[0];
+      }
+
+      if (position === "top") {
+        if(animals[index + 1]) {
+        return animals[index + 1];
+        } else {
+          return animals[0];
+        }
+      }
+
+      if (position === "bottom") {
+        if(animals[index - 1]) {
+          return animals[index - 1];
+          } else {
+            return animals[0];
+          }
+      }
+    } else {
       return animals[0];
-    }
-
-    if (position === "top") {
-      return animals[index + 1];
-    }
-
-    if (position === "bottom") {
-      return animals[index - 1 + animals.length];
     }
   };
 
   const checkWin = () => {
-    console.log(animal1, animal2, animal3);
     if (animal1 === animal2 && animal2 === animal3) {
       setWin(true);
-      console.log("win");
     }
   };
 
